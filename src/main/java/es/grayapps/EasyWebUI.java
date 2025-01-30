@@ -14,6 +14,7 @@ import okhttp3.RequestBody;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * EasyWebUI is a class that allows
@@ -32,7 +33,10 @@ public class EasyWebUI {
 
     private String serverUrl;
     private String serverToken;
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .build();
 
     /**
      * Creates a new instance of EasyWebUI.

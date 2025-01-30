@@ -156,7 +156,7 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
         private String role;
 
         public String getContent() {
-            return content.replaceAll("<think>.*?</think>\\s*", "");
+            return content.replaceAll("(?s)<think>.*?</think>\\s*", "");
         }
 
         public void setContent(String content) {
