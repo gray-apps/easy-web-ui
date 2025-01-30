@@ -12,49 +12,92 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * CompletionMethod is a class that represents a method to request a completion from the server.
+ * It implements the IMethod interface and is serializable.
+ *
+ * @author javiergg
+ */
 public class CompletionMethod implements IMethod<CompletionResponse>, Serializable {
 
-    private String model;
-    private String message;
-    private String role;
+    private final String model;
+    private final String message;
+    private final String role;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Creates a new instance of CompletionMethod with the provided model, message, and role.
+     *
+     * @param model   the model to use for the completion.
+     * @param message the message to complete.
+     * @param role    the role of the message.
+     */
     public CompletionMethod(String model, String message, String role) {
         this.model = model;
         this.message = message;
         this.role = role;
     }
 
+    /**
+     * Returns the HTTP method type for this request.
+     *
+     * @return the HTTP method type.
+     */
     @Override
     public MethodType getMethod() {
         return MethodType.POST;
     }
 
+    /**
+     * Returns the path for this request.
+     *
+     * @return the path.
+     */
     @Override
     public String getPath() {
         return "/api/chat/completions";
     }
 
+    /**
+     * Returns the body of the request as a JSON string.
+     *
+     * @return the body of the request.
+     * @throws JsonProcessingException if an error occurs while processing JSON.
+     */
     @Override
     public String getBody() throws JsonProcessingException {
         return mapper.writeValueAsString(Map.of("model", model, "messages", List.of(Map.of("content", message, "role", role))));
     }
 
+    /**
+     * Deserializes the JSON response into a CompletionResponse object.
+     *
+     * @param json the JSON response.
+     * @return the deserialized CompletionResponse.
+     * @throws EasyWebUIException if an error occurs while parsing JSON.
+     */
     @Override
     public CompletionResponse deserialize(String json) throws EasyWebUIException {
         try {
-             return mapper.readValue(json, CompletionUnparsedResponse.class).getResponse();
+            return mapper.readValue(json, CompletionUnparsedResponse.class).getResponse();
         } catch (JsonProcessingException e) {
             throw new EasyWebUIException("Error parsing json", e);
         }
     }
 
+    /**
+     * CompletionUnparsedResponse is a class that represents the unparsed response from the server.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CompletionUnparsedResponse {
         private String id;
         private List<CompletionUnparsedChoiceResponse> choices;
 
+        /**
+         * Returns the parsed CompletionResponse from the unparsed response.
+         *
+         * @return the parsed CompletionResponse.
+         */
         public CompletionResponse getResponse(){
             this.choices.sort(Comparator.comparing(CompletionUnparsedChoiceResponse::getIndex));
             CompletionUnparsedChoiceResponse choice =  this.choices.stream().findFirst().orElseThrow(()-> new EasyWebUIExceptionRuntime("No choices found"));
@@ -78,6 +121,9 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
         }
     }
 
+    /**
+     * CompletionUnparsedChoiceResponse is a class that represents an unparsed choice in the response.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CompletionUnparsedChoiceResponse {
         private Integer index;
@@ -92,7 +138,6 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
         }
 
         public CompletionUnparsedMessageResponse getMessage() {
-
             return message;
         }
 
@@ -101,6 +146,9 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
         }
     }
 
+    /**
+     * CompletionUnparsedMessageResponse is a class that represents an unparsed message in the response.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CompletionUnparsedMessageResponse {
         private String content;
