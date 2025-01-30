@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>es.grayapps</groupId>
-    <artifactId>EasyWebUI</artifactId>
+    <artifactId>easy-web-ui</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
 
-    <name>EasyWebUI</name>
+    <name>easy-web-ui</name>
     <description>Connector helper for WebUI</description>
-    <url>https://github.com/GrayAppsOfficial/EasyWebUI</url>
+    <url>https://github.com/GrayAppsOfficial/easy-web-ui</url>
 
     <developers>
         <developer>
@@ -23,9 +23,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/GrayAppsOfficial/EasyWebUI.git</connection>
-        <developerConnection>scm:git:ssh://github.com:GrayAppsOfficial/EasyWebUI.git</developerConnection>
-        <url>http://github.com/GrayAppsOfficial/EasyWebUI/tree/main</url>
+        <connection>scm:git:git://github.com/gray-apps/easy-web-ui.git</connection>
+        <developerConnection>scm:git:ssh://github.com:GrayAppsOfficial/easy-web-ui.git</developerConnection>
+        <url>http://github.com/GrayAppsOfficial/easy-web-ui/tree/main</url>
     </scm>
 
     <licenses>

@@ -13,32 +13,17 @@ without worrying about the details of HTTP communication.
 
 ## Installation
 
-Since EasyWebUI is not yet available in Maven repositories, you can include it manually in your project. Follow these
-steps:
+EasyWebUI is now available in Maven Central. You can include it in your project by adding the following dependency to
+your `pom.xml` file:
 
-1. Clone the EasyWebUI repository:
-    ```sh
-    git clone https://github.com/GrayAppsOfficial/EasyWebUI.git
-    ```
+```xml
 
-2. Navigate to the project directory:
-    ```sh
-    cd EasyWebUI
-    ```
-
-3. Install the library in your local Maven repository:
-    ```sh
-    mvn install
-    ```
-
-4. Add the dependency to your `pom.xml` file:
-    ```xml
-    <dependency>
-        <groupId>es.grayapps</groupId>
-        <artifactId>EasyWebUI</artifactId>
-        <version>0.1</version>
-    </dependency>
-    ```
+<dependency>
+   <groupId>es.grayapps</groupId>
+   <artifactId>easy-web-ui</artifactId>
+   <version>0.1</version>
+</dependency>
+```
 
 ## Usage
 
@@ -62,3 +47,12 @@ public class Main {
         System.out.println(response);
     }
 }
+```
+
+## Links
+
+- **Repository**: [GitHub](https://github.com/gray-apps/easy-web-ui)
+- **Project Page**: [GrayApps](https://grayapps.es)
+- **License**: [GNU GENERAL PUBLIC LICENSE Version 3](https://www.gnu.org/licenses/gpl-3.0.html)
+
+```
