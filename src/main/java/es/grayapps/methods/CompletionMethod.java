@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * CompletionMethod is a class that represents a method to request a completion from the server.
@@ -26,16 +27,16 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * Creates a new instance of CompletionMethod with the provided model, message, and role.
+     * Creates a new CompletionMethod with the given model, message, and role.
      *
-     * @param model   the model to use for the completion.
-     * @param message the message to complete.
-     * @param role    the role of the message.
+     * @param model the model to use for the completion.
+     * @param message the message to use for the completion.
+     * @param role the role to use for the completion.
      */
     public CompletionMethod(String model, String message, String role) {
-        this.model = model;
-        this.message = message;
-        this.role = role;
+        this.model = Objects.requireNonNull(model);
+        this.message = Objects.requireNonNull(message);
+        this.role = Objects.requireNonNull(role);
     }
 
     /**
