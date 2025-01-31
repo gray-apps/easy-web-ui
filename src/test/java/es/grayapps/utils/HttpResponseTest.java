@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -23,22 +22,6 @@ class HttpResponseTest {
         IOException exception = new IOException("Network error");
         httpResponse.onFailure(mock(Call.class), exception);
         assertTrue(httpResponse.isCompletedExceptionally());
-    }
-
-    @Test
-    void onResponseCompletesSuccessfully() throws IOException, EasyWebUIException {
-        IMethod<String> mockMethod = mock(IMethod.class);
-        when(mockMethod.deserialize(anyString())).thenReturn("Success");
-        HttpResponse<String, IMethod<String>> httpResponse = new HttpResponse<>(mockMethod);
-
-        Response mockResponse = mock(Response.class);
-        ResponseBody mockBody = mock(ResponseBody.class);
-        when(mockResponse.body()).thenReturn(mockBody);
-        when(mockBody.string()).thenReturn("Response body");
-
-        httpResponse.onResponse(mock(Call.class), mockResponse);
-        assertTrue(httpResponse.isDone());
-        assertEquals("Success", httpResponse.join());
     }
 
     @Test

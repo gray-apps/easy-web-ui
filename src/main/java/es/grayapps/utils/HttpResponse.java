@@ -52,6 +52,10 @@ public class HttpResponse<T extends Serializable, Method extends IMethod<T>> ext
      */
     @Override
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+        if (response.code() != 200) {
+            completeExceptionally(new EasyWebUIException("Api returned error code: " + response.code()));
+            return;
+        }
         try(ResponseBody body = response.body()) {
             if (body == null) {
                 completeExceptionally(new EasyWebUIExceptionRuntime("Api returned empty response."));
