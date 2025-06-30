@@ -34,8 +34,8 @@ public class EasyWebUI {
     private String serverUrl;
     private String serverToken;
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
+            .connectTimeout(10, TimeUnit.MINUTES)
+            .readTimeout(10, TimeUnit.MINUTES)
             .build();
 
     /**
