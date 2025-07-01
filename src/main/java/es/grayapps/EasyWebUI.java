@@ -23,27 +23,17 @@ import java.util.concurrent.TimeUnit;
  * @author javiergg
  */
 public class EasyWebUI {
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    public String getServerToken() {
-        return serverToken;
-    }
-
-    private String serverUrl;
-    private String serverToken;
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
             .build();
-
+    private String serverUrl;
+    private String serverToken;
     /**
      * Creates a new instance of EasyWebUI.
      */
     public EasyWebUI() {
     }
-
     /**
      * Creates a new instance of EasyWebUI with the provided server URL and server token.
      *
@@ -56,31 +46,39 @@ public class EasyWebUI {
         this.serverToken = Objects.requireNonNull(serverToken);
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public String getServerToken() {
+        return serverToken;
+    }
+
     /**
      * Executes the provided completion method.<br>
      * A completion is ask for a completion for a message,
-     *  so server will answer that you say on input.
+     * so server will answer that you say on input.
      *
      * @param completionMethod the completion method to execute.
      * @return the response of the completion method.
      */
     public CompletionResponse executeCompletion(CompletionMethod completionMethod) {
-         return execute(completionMethod);
+        return execute(completionMethod);
     }
 
     /**
      * Executes the provided method.
      *
      * @param method the method to execute.
-     * @param <T> the type of the response.
+     * @param <T>    the type of the response.
      * @return the response of the method.
      */
-    private <T extends Serializable> T execute(IMethod<T> method)  {
+    private <T extends Serializable> T execute(IMethod<T> method) {
         try {
             HttpResponse<T, IMethod<T>> callback = new HttpResponse<>(method);
             RequestBody body = RequestBody.create(method.getBody(), MediaType.get("application/json"));
             Request request = new Request.Builder()
-                    .url(serverUrl+method.getPath())
+                    .url(serverUrl + method.getPath())
                     .method(method.getMethod().name(), body)
                     .addHeader("Authorization", "Bearer " + serverToken)
                     .build();

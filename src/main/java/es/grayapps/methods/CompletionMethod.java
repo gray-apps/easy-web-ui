@@ -22,21 +22,44 @@ import java.util.Objects;
 public class CompletionMethod implements IMethod<CompletionResponse>, Serializable {
 
     private final String model;
-    private final String message;
-    private final String role;
+    private final List<CompletionMessage> messages;
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Creates a new CompletionMethod with the given model, message, and role.
      *
-     * @param model the model to use for the completion.
+     * @param model   the model to use for the completion.
      * @param message the message to use for the completion.
-     * @param role the role to use for the completion.
+     * @param role    the role to use for the completion.
      */
     public CompletionMethod(String model, String message, String role) {
         this.model = Objects.requireNonNull(model);
-        this.message = Objects.requireNonNull(message);
-        this.role = Objects.requireNonNull(role);
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(role);
+        this.messages = List.of(new CompletionMessage(message, role));
+    }
+
+    /**
+     * Creates a new CompletionMethod with the given model and a single completion message.
+     *
+     * @param model             the model to use for the completion.
+     * @param completionMessage the completion message to use.
+     */
+    public CompletionMethod(String model, CompletionMessage completionMessage) {
+        this.model = Objects.requireNonNull(model);
+        Objects.requireNonNull(completionMessage);
+        this.messages = List.of(completionMessage);
+    }
+
+    /**
+     * Creates a new CompletionMethod with the given model and a list of completion messages.
+     *
+     * @param model    the model to use for the completion.
+     * @param messages the list of completion messages to use.
+     */
+    public CompletionMethod(String model, List<CompletionMessage> messages) {
+        this.model = Objects.requireNonNull(model);
+        this.messages = Objects.requireNonNull(messages);
     }
 
     /**
@@ -67,7 +90,7 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
      */
     @Override
     public String getBody() throws JsonProcessingException {
-        return mapper.writeValueAsString(Map.of("model", model, "messages", List.of(Map.of("content", message, "role", role))));
+        return mapper.writeValueAsString(Map.of("model", model, "messages", mapper.writeValueAsString(messages)));
     }
 
     /**
@@ -99,9 +122,9 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
          *
          * @return the parsed CompletionResponse.
          */
-        public CompletionResponse getResponse(){
+        public CompletionResponse getResponse() {
             this.choices.sort(Comparator.comparing(CompletionUnparsedChoiceResponse::getIndex));
-            CompletionUnparsedChoiceResponse choice =  this.choices.stream().findFirst().orElseThrow(()-> new EasyWebUIExceptionRuntime("No choices found"));
+            CompletionUnparsedChoiceResponse choice = this.choices.stream().findFirst().orElseThrow(() -> new EasyWebUIExceptionRuntime("No choices found"));
             return new CompletionResponse(choice.getMessage().getContent(), choice.getMessage().getRole());
         }
 
