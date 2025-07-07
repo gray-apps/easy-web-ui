@@ -46,27 +46,34 @@ public class HttpResponse<T extends Serializable, Method extends IMethod<T>> ext
     /**
      * Called when the request is successful.
      *
-     * @param call the call that was made.
+     * @param call     the call that was made.
      * @param response the response that was received.
      * @throws IOException if an error occurs while reading the response.
      */
     @Override
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-        if (response.code() != 200) {
-            completeExceptionally(new EasyWebUIException("Api returned error code: " + response.code()));
-            return;
-        }
-        try(ResponseBody body = response.body()) {
+        try (ResponseBody body = response.body()) {
+            if (response.code() != 200) {
+                final String errorBody = body != null ? body.string() : "Empty body";
+                completeExceptionally(new EasyWebUIException(
+                        "API returned error code: " + response.code() + " - Body: " + errorBody
+                ));
+                return;
+            }
+
             if (body == null) {
-                completeExceptionally(new EasyWebUIExceptionRuntime("Api returned empty response."));
-            } else {
-                try {
-                    complete(method.deserialize(body.string()));
-                } catch (EasyWebUIException|EasyWebUIExceptionRuntime e) {
-                    completeExceptionally(e);
-                }
+                completeExceptionally(new EasyWebUIExceptionRuntime("API returned empty response."));
+                return;
+            }
+
+            try {
+                final T result = method.deserialize(body.string());
+                complete(result);
+            } catch (EasyWebUIException | EasyWebUIExceptionRuntime e) {
+                completeExceptionally(e);
             }
         }
     }
+
 
 }

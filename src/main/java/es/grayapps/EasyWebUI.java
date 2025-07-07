@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * EasyWebUI is a class that allows
@@ -23,17 +25,36 @@ import java.util.concurrent.TimeUnit;
  * @author javiergg
  */
 public class EasyWebUI {
+
+    private static final Logger logger = Logger.getLogger(EasyWebUI.class.getName());
+
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
+            .writeTimeout(10, TimeUnit.MINUTES)
+            .callTimeout(10, TimeUnit.MINUTES)
+            .retryOnConnectionFailure(true)
+            .addInterceptor(chain -> {
+                Request original = chain.request();
+                Request request = original.newBuilder()
+                        .header("Accept", "application/json")
+                        .header("User-Agent", "EasyWebUI/1.0")
+                        .build();
+                logger.fine("Intercepted request: " + request.url());
+                return chain.proceed(request);
+            })
             .build();
+
     private String serverUrl;
     private String serverToken;
+
     /**
      * Creates a new instance of EasyWebUI.
      */
     public EasyWebUI() {
+        logger.info("EasyWebUI instance created with empty constructor.");
     }
+
     /**
      * Creates a new instance of EasyWebUI with the provided server URL and server token.
      *
@@ -44,6 +65,7 @@ public class EasyWebUI {
     public EasyWebUI(String serverUrl, String serverToken) {
         this.serverUrl = Objects.requireNonNull(serverUrl);
         this.serverToken = Objects.requireNonNull(serverToken);
+        logger.info("EasyWebUI instance created with URL: " + serverUrl);
     }
 
     public String getServerUrl() {
@@ -63,6 +85,7 @@ public class EasyWebUI {
      * @return the response of the completion method.
      */
     public CompletionResponse executeCompletion(CompletionMethod completionMethod) {
+        logger.info("Executing CompletionMethod: " + completionMethod.getClass().getSimpleName());
         return execute(completionMethod);
     }
 
@@ -75,16 +98,41 @@ public class EasyWebUI {
      */
     private <T extends Serializable> T execute(IMethod<T> method) {
         try {
+            logger.fine("Preparing HTTP request for method: " + method.getClass().getSimpleName());
+            logger.fine("Request path: " + method.getPath());
+            logger.fine("Request method: " + method.getMethod());
+            logger.fine("Request body: " + method.getBody());
+
             HttpResponse<T, IMethod<T>> callback = new HttpResponse<>(method);
-            RequestBody body = RequestBody.create(method.getBody(), MediaType.get("application/json"));
+
+            RequestBody body = RequestBody.create(
+                    method.getBody(),
+                    MediaType.get("application/json")
+            );
+
             Request request = new Request.Builder()
                     .url(serverUrl + method.getPath())
                     .method(method.getMethod().name(), body)
                     .addHeader("Authorization", "Bearer " + serverToken)
                     .build();
+
+            logger.fine("Sending request to: " + request.url());
+
             client.newCall(request).enqueue(callback);
-            return callback.get();
-        } catch (JsonProcessingException | ExecutionException | InterruptedException e) {
+            T response = callback.get();
+
+            logger.fine("Received response of type: " + (response != null ? response.getClass().getSimpleName() : "null"));
+
+            return response;
+        } catch (JsonProcessingException e) {
+            logger.log(Level.SEVERE, "JSON processing error: " + e.getMessage(), e);
+            throw new EasyWebUIExceptionRuntime(e);
+        } catch (ExecutionException e) {
+            logger.log(Level.SEVERE, "Execution error during HTTP call: " + e.getMessage(), e);
+            throw new EasyWebUIExceptionRuntime(e);
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Request interrupted: " + e.getMessage(), e);
+            Thread.currentThread().interrupt();
             throw new EasyWebUIExceptionRuntime(e);
         }
     }

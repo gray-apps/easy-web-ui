@@ -90,7 +90,7 @@ public class CompletionMethod implements IMethod<CompletionResponse>, Serializab
      */
     @Override
     public String getBody() throws JsonProcessingException {
-        return mapper.writeValueAsString(Map.of("model", model, "messages", mapper.writeValueAsString(messages)));
+        return mapper.writeValueAsString(Map.of("model", model, "messages", messages));
     }
 
     /**
