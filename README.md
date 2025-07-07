@@ -1,3 +1,7 @@
+[![Maven Central](https://img.shields.io/maven-central/v/es.grayapps/easy-web-ui.svg)](https://search.maven.org/artifact/es.grayapps/easy-web-ui)
+[![Build Status](https://github.com/gray-apps/easy-web-ui/actions/workflows/build.yml/badge.svg)](https://github.com/gray-apps/easy-web-ui/actions)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+
 # EasyWebUI
 
 **EasyWebUI** is a library in progress designed to facilitate the connection between Java applications and WebUI. It
