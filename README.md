@@ -19,9 +19,9 @@ your `pom.xml` file:
 ```xml
 
 <dependency>
-   <groupId>es.grayapps</groupId>
-   <artifactId>easy-web-ui</artifactId>
-   <version>0.1</version>
+    <groupId>es.grayapps</groupId>
+    <artifactId>easy-web-ui</artifactId>
+    <version>0.3.0</version>
 </dependency>
 ```
 
